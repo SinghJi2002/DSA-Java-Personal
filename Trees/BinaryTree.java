@@ -59,6 +59,6 @@ public class BinaryTree{
         }
         System.out.println(dString+node.value);
         display(node.left,dString+'\t');
-        display(node.right,dString+'\t');
+        display(node.right, dString+'\t');
     }
 }
