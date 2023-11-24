@@ -70,4 +70,42 @@ public class BinarySearchTree {
         }
         return(Math.abs(getHeight(node.left)-getHeight(node.right))<=1 && balanced(node.left) && balanced(node.right));
     }
+    //Now till this point we are inserting values one by one. Now lets say, we want to insert multiple
+    //values in one shot. We can do this via arrays in this way.
+    public void populate(int[] nums){
+        for(int i=0;i<nums.length;i++){
+            insertion(nums[i]);
+        }
+    }
+    //Now the problem with the above method is that if the array is sorted, we will have one directional
+    //linear tree. We need to sort this and the algorithm below does that.
+    public void populateSorted(int[] nums){
+        int start=0;
+        int end=nums.length-1;
+        populateSorted(nums,start,end);
+    }
+    //The basic logic used below is similar to that of binary search. Find the middle element, insert it.
+    //Break it into two paets, then find the middle element again, insert it. The terminating condition
+    //will be start?=end.
+    public void populateSorted(int[] nums,int start,int end){
+        if(start>=end){
+            return;
+        }
+        int mid=(end+start)/2;
+        insertion(mid);
+        populateSorted(nums, start, mid);
+        populateSorted(nums, mid+1, end);
+    }
+    //Of all this that we have done, the last is displaying the tree elements.
+    public void display(){
+        display(root);
+    }
+    public void display(Node node){
+        if(node==null){
+            return;
+        }
+        System.out.println(node.value);
+        display(node.left);
+        display(node.right);
+    }
 }
