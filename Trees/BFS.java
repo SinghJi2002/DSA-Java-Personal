@@ -8,6 +8,7 @@ import java.util.Queue;
 import SingleLinkedLists.SingleLinkedLists.Node;
 
 public class BFS {
+    //Complexity:O(N)
     public static List<List<Integer>> BFS(Node root){
     //The return result will be array of list with each list containing values of one level
         List<List<Integer>>result=new ArrayList<>();
