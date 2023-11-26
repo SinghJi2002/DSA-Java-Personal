@@ -8,6 +8,9 @@ public class AVLTrees {
         public Node right;
         public int value;
         public int height;
+        public Node(int value){
+            this.value=value;
+        }
     }
     
     public Node root;
@@ -123,7 +126,37 @@ public class AVLTrees {
         return(node);
     }
     //Lets write the left rotate and write rotate function.
+    public Node rotateRight(Node node){
+        //Refer to the diagram where we are rotating the left-left case using the right rotate. Child 
+        //is on the left of the parent where as the extra tree is on the right.
+        Node child=node.left;
+        Node extra=node.right;
+        //When rotation takes place, child becomes central. Parent lies on the right, where as the
+        //extra tree lies on the left of the parent tree.
+        child.right=node;
+        node.left=extra;
+        //After the rotation is done, the next important thing to do is update the heights of the parent
+        //and child.
+        child.height=Math.max(getHeight(child.left),getHeight(child.right));
+        node.height=Math.max(getHeight(node.right),getHeight(node.left));
+        //The node is the parent node.
+        return(child); 
+    }
+    
     public Node rotateLeft(Node node){
-        
+        //Refer to the diagram where we are rotating the left-left already right rotated case 
+        //using the left rotate. Parent is on the right of the child where as the extra tree is 
+        //on the left of the parent.
+        Node parent=node.right;
+        Node extra=parent.left;
+        //On left rotate, child becomes left node of the parent and the extra node re-attaches to the
+        //right of the child.
+        parent.left=node;
+        node.right=extra;
+        //Note that the node is the child node.
+        //Now that rotation is done, left update the heights.
+        node.height=Math.max(getHeight(node.left),getHeight(node.right));
+        parent.height=Math.max(getHeight(parent.left),getHeight(parent.right));
+        return(parent); 
     }
 }
