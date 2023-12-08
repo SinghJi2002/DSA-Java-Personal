@@ -1,5 +1,3 @@
-package Reccursion.Theory;
-
 import java.util.Arrays;
 
 public class MergeSort{

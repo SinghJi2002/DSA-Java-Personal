@@ -1,5 +1,3 @@
-package Reccursion.Theory;
-
 import java.util.Arrays;
 
 public class QuickSort {
@@ -23,6 +21,8 @@ public class QuickSort {
                 int temp=unsortedArray[s];
                 unsortedArray[s]=unsortedArray[e];
                 unsortedArray[e]=temp;
+                s++;
+                e--;
             }
         }
         quickSort(unsortedArray, low, e);
