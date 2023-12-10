@@ -1,5 +1,14 @@
 package StackAndQueue;
-
+/*Deque is nothing but a queue that doesn't follow the general FIFO concept on which queues generally 
+work on. Its an array based or linked link based structure in which insertion and deletion of element
+can be undertaken from both the start and the end.
+The general implementation can be seen below.
+There are generally 2 types of dequeue.
+1)Retricted Input Dequeue:In this insertion from front is not allowed. See this in the context of a 
+general queue where insertion is always done from the back to facilitate the FIFO algo.
+2)Restricted Output Dequeue:In this deletion is not allowed from the rear. In context of queue, deletion
+is always done from front in order to facilitate FIFO algo.
+ */
 public class Deque{
     //Lets implement deque using linked list(Its easier that way).
     //Basic Properties of Deque
