@@ -1,25 +1,25 @@
-package Graphs;
-
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
-
-import javax.swing.text.html.HTMLDocument.Iterator;
+import java.util.Queue;
 
 public class BFS {
-    public void BFS(int root,int size,LinkedList<Integer> adj){
+    public void BFS(int root,int size,ArrayList<ArrayList<Integer>> adj){
         //We will first write the visited array.
         boolean visited[]=new boolean[size+1];
         //Since we are following 1 based indexing, mark 0 true.
         visited[0]=true;
-        //Queue will store current level nodes
-        LinkedList<Integer> queue=new LinkedList<>();
+        //Queue will store exploration nodes.
+        Queue<Integer> queue=new LinkedList<>();
+        //We create a solution array
+        ArrayList<Integer> solList=new ArrayList<>();
         //Now since root node is already fed into the system, we will mark it visited.
         visited[root]=true;
         queue.add(root);
         while(!queue.isEmpty()){
-            int valueDel=queue.remove();
-            System.out.println(valueDel);
-            Iterator<Integer> iterate=adj[2].listIterator();
+            int node=queue.remove();
+            solList.add(node);
+            Iterator<Integer> i=adj[node].listIterator();
             while (i.hasNext()) {
                 int n = i.next();
                 if (!visited[n]) {
