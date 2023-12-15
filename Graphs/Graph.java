@@ -104,7 +104,7 @@ public class Graph {
         5->{6,3,4}
         6->{5} 
         */
-        ArrayList<ArrayList<Integer>> adjList=new ArrayList<ArrayList<Integer>>();
+        ArrayList<ArrayList<Integer>> adjList=new ArrayList<>();
         //First we will add empty lists in all the preffered indexes.
         for(int i=0;i<n+1;i++){
             //Create an empty arraylist.
