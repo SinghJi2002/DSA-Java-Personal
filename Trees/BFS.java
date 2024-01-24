@@ -8,6 +8,11 @@ import java.util.Queue;
 import SingleLinkedLists.SingleLinkedLists.Node;
 
 public class BFS {
+    class Node{
+        Node left;
+        Node right;
+        int value;
+    }
     //Complexity:O(N)
     public static List<List<Integer>> BFS(Node root){
     //The return result will be array of list with each list containing values of one level
@@ -29,7 +34,7 @@ public class BFS {
             List<Integer>currentLevelValues=new ArrayList<>();
             //Lets traverse the current level. To do that we need to traverse the queue that keep record
             //of untraversed nodes.
-            while(int i=0;i<numberOfNodeOnCurrLevel;i++){
+            for(int i=0;i<numberOfNodeOnCurrLevel;i++){
                 //Now pick the current elements to be transversed on the current level. Since in 1st trail
                 //we are on level one, one root node. Next trail, level 2, so two node and so on.
                 Node removedNodeFromQueue=queue.remove();

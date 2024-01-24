@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.Stack;
 
 public class ImplementQueueInStack {
-    Stack<Integer> stack1=new Stack()<>();
+    Stack<Integer> stack1=new Stack<>();
     Stack<Integer> stack2=new Stack<>();
 
     public void add(int value){

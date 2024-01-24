@@ -17,8 +17,9 @@ public class LargestRectangleInHistogram {
                 }
             }
 
-            if()
+        
         }
+        return(ans);
     }
 
     public static int[] SmallestElementPrev(int[] heights){

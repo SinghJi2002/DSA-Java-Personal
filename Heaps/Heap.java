@@ -256,7 +256,7 @@ public class Heap {
     public ArrayList<Integer> heapSort(){
         ArrayList<Integer> data = new ArrayList<>();
         while(!heapArrayList.isEmpty()) {
-          data.add(heapArrayList.remove());
+          data.add(heapArrayList.remove(0));
         }
         return data;
       }
