@@ -19,7 +19,7 @@ public class Q3 {
                 System.out.println(num*2);
             }
         }catch(Exception e){
-            System.out.println(e.toString());
+            System.out.println(e.getMessage());
         }
     }
 }

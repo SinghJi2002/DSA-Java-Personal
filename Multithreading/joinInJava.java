@@ -64,7 +64,11 @@
 
 //In lisence making process we require candidate to clear medical, written and driving test that he/she will give indiisually. We will do this using thread and join
 
-
+class MainClass{
+    static Thread driver;
+    static Thread medical;
+    static Thread test;
+}
 class medical extends Thread{
     public void run(){
         System.out.println("Appearing for medical");
@@ -74,6 +78,11 @@ class medical extends Thread{
 
 class written extends Thread{
     public void run(){
+        try{
+            medical.join();
+        }catch(InterruptedException e){
+            System.out.println(e);
+        }
         System.out.println("Appearing for written exam");
         System.out.println("Exam clear");
     }
@@ -81,6 +90,11 @@ class written extends Thread{
 
 class testDrive extends Thread{
     public void run(){
+        try{
+            written.join();
+        }catch(InterruptedException e){
+            System.out.println(e);
+        }
         System.out.println("Appearing for test drive");
         System.out.println("Driving test clear");
     }
@@ -90,14 +104,14 @@ public class joinInJava{
     public static void main(String[] args) {
         try{
             medical t1=new medical();
+            driver=t1;
             t1.start();
-            t1.join();
             written t2=new written();
+            written=t2;
             t2.start();
-            t2.join();
             testDrive t3=new testDrive();
             t3.start();
-            t3.join();
+            driver=t3;
             System.out.println("Lisence Granted");
         }catch(InterruptedException e){
             System.out.println(e);
