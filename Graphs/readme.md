@@ -267,10 +267,1521 @@ class BFS {
 
 ![alt text](image-22.png)
 
+Here we assume that we are starting at the node 1. In that case we will start from 1 and go to its absolute depth until we reach the leaf node. In that case the traversal will look like as follows,
+
+![alt text](image-25.png)
+
+The DFS traversal till this particular stage will be,
+
+    1->2->5
+
+Now after we have reach the depth we will track back and discover the other depths. Here from 5 we will track back to 2, and then we will go to the other depth which is 6. The traversal will look something like this,
+
+![alt text](image-26.png)
+
+Then traversal till this stage is,
+
+    1->2->5->6
+
+Now that we have discovered all the depth on the left side of 1, we will now move to the right of 1. The next traversals will look like the following,
+
+![alt text](image-27.png)
+
+In above diagram we see DFS traversal backtracking from 6 to 1. This is followed by DFS on the right side of 1, where DFS of 1 will be 3, DFS of 3 will be 7, DFS of 7 will be 8 and DFS of 8 will be 4.
+
+The resultant DFS traversal hence would be,
+
+    1->2->5->6->3->7->8->4
+
+The code for DFS can be observed at the file,
+
+    DFS.java
+
+Or we can view the code here as the following
+
+```java
+class DFS {
     
+    public static void dfs(int node,boolean vis[],ArrayList<ArrayList<Integer>> adj, ArrayList<Integer> ls){
+        
+        vis[node]=true;
+        ls.add(node);
+        
+        for(Integer it : adj.get(node)){
+            if(!vis[it]){
+                dfs(it,vis,adj,ls);
+            }
+        }
+    }
+    public ArrayList<Integer> dfsOfGraph(int V, ArrayList<ArrayList<Integer>> adj) {
+        boolean vis[]=new boolean[V+1];
+        vis[0]=true;//One indexing
+        ArrayList<Integer>ls=new ArrayList<>();
+        dfs(0,vis,adj,ls);
+        return ls;
+    }
+}
+```
+
+# Question on BFS and DFS
+
+## Number Of Provinces
+
+### Code
+
+```java
+class Solution {
+
+    //This is a normal DFS traversal code, so not much to think about here.
+    public static void dfs(int node,int[][] isConnected, int countProvinces,boolean[] visitedArray){
+        visitedArray[node]=true;
+        for(int j=0;j<isConnected[node-1].length;j++){
+            if(isConnected[node-1][j]==1 && !visitedArray[j+1]){
+                dfs(j+1,isConnected,countProvinces,visitedArray);  
+            }
+        }
+    }
+    
+    //The whole logic to solving the question lies here.
+    public int findCircleNum(int[][] isConnected) {
+
+        //This variable will store the number of provinces that is to be returned at the end of the code.
+        int countProvinces=0;
+
+        //This is condition checks whether a graph exists or not.
+        if(isConnected.length>0){
+
+            //We have created a visited array. Initially all the nodes are declared false(not visited)
+            //except 0 since we are using 1 based index(0 doesnt matter)
+            boolean visitedArray[]=new boolean[isConnected[0].length + 1];
+            visitedArray[0]=true; //1-based indexing
+
+            //All the logic of solving this question lies here. Here we are looping n number of times,
+            //where n represents number of distinct nodes in the graph. If there was a case where there 
+            //was only one province, then number of times dfs would have been called from this block of
+            //code would have been one. If thats not the case and there exits m provinces, dfs will be 
+            //called m times from this code block making the solution to be m.
+            for(int i=1;i<isConnected.length+1;i++){
+                if(!visitedArray[i]){
+                    countProvinces++;
+                    dfs(i,isConnected,countProvinces,visitedArray);   
+                }
+            }
+            return(countProvinces);
+        }
+        return(0);
+    }
+}
+```
+
+### Explanation
+
+I'll provide you with a detailed breakdown of the **"Number of Provinces"** solution so you can use it for revision later. The explanation will cover:
+
+1. **Intuition Behind the Approach**
+2. **Concept and Working of the Code**
+3. **Line-by-Line Explanation**
+4. **Example Execution with Iteration Table**
+5. **Complexity Analysis**
+
+---
+
+## **1. Intuition Behind the Approach**
+The problem is about finding **the number of connected components in an undirected graph**, where the graph is represented as an **adjacency matrix**.
+
+- Each **city is a node**, and if two cities are directly connected, an edge exists between them.
+- A **province** is a connected component, meaning all cities that are directly or indirectly connected belong to the same province.
+- We need to **count the number of provinces** (i.e., the number of connected components).
+
+The **Depth First Search (DFS) traversal** is a great way to **visit all nodes of a connected component** before moving to the next. Each DFS call explores a single province completely. The number of times DFS is called from the main function gives the **number of provinces**.
+
+---
+
+## **2. Concept and How the Code Works**
+### **Key Observations:**
+1. **The given matrix `isConnected` is an adjacency matrix**:
+   - `isConnected[i][j] = 1` means **there is a direct connection** between city `i+1` and city `j+1`.
+   - `isConnected[i][j] = 0` means **there is no direct connection** between these cities.
+   - The matrix is **always symmetric**, meaning if city `A` is connected to city `B`, then city `B` is also connected to city `A`.
+
+2. **The approach involves:** 
+   - Keeping a **visited array** to track which cities have been explored.
+   - Iterating through each city, and if it's **not visited**, we **start a DFS traversal** from it to mark all reachable cities as visited.
+   - Every DFS call represents a **new province**.
+
+---
+
+## **3. Line-by-Line Explanation**
+```java
+class Solution {
+```
+- Defines the class `Solution` which contains the methods to solve the problem.
+
+---
+
+### **DFS Function**
+```java
+public static void dfs(int node, int[][] isConnected, int countProvinces, boolean[] visitedArray) {
+```
+- This function **performs Depth First Search (DFS)** from the current `node` to visit all connected cities.
+
+```java
+visitedArray[node] = true;
+```
+- Marks the current node as **visited** to avoid re-processing.
+
+```java
+for (int j = 0; j < isConnected[node - 1].length; j++) {
+```
+- Iterates over all cities **to check which ones are directly connected** to the current city (`node`).
+
+```java
+if (isConnected[node - 1][j] == 1 && !visitedArray[j + 1]) {
+```
+- If `node` is connected to city `j+1` **and** that city hasn’t been visited, **call DFS recursively**.
+
+```java
+dfs(j + 1, isConnected, countProvinces, visitedArray);
+```
+- Recursively visit all connected cities.
+
+---
+
+### **Main Function: `findCircleNum`**
+```java
+public int findCircleNum(int[][] isConnected) {
+```
+- **Entry point** for solving the problem.
+
+```java
+int countProvinces = 0;
+```
+- This variable **stores the number of provinces**.
+
+```java
+if (isConnected.length > 0) {
+```
+- **Edge case check**: If there are no cities, return `0`.
+
+```java
+boolean visitedArray[] = new boolean[isConnected[0].length + 1];
+visitedArray[0] = true;
+```
+- **Create a `visitedArray`** to track visited cities.
+- **1-based indexing** is used, so index `0` is ignored.
+
+```java
+for (int i = 1; i < isConnected.length + 1; i++) {
+```
+- **Iterate through all cities** to check if they have been visited.
+
+```java
+if (!visitedArray[i]) {
+```
+- If a city hasn’t been visited, it means it **belongs to a new province**.
+
+```java
+countProvinces++;
+```
+- **Increment the province count**.
+
+```java
+dfs(i, isConnected, countProvinces, visitedArray);
+```
+- **Start DFS traversal** from this city to mark all reachable cities.
+
+```java
+return countProvinces;
+```
+- **Return the total number of provinces**.
+
+---
+
+## **4. Example Execution with Iteration Table**
+
+### **Example Input:**
+```plaintext
+isConnected = [
+    [1, 1, 0],
+    [1, 1, 0],
+    [0, 0, 1]
+]
+```
+
+### **Graph Representation**
+```
+   (1) --- (2)     (3)
+```
+- Cities `1` and `2` form one province.
+- City `3` is isolated and forms another province.
+
+### **Execution Steps**
+| Step | City (`i`) | `visitedArray` | `countProvinces` | DFS Call |
+|------|-----------|----------------|------------------|----------|
+| 1    | `1`       | `[true, false, false, false]` | `1` | Start DFS from `1` |
+| 2    | `2` (connected to `1`) | `[true, true, false, false]` | `1` | Continue DFS |
+| 3    | `3`       | `[true, true, false, true]` | `2` | Start DFS from `3` |
+
+### **Final Output:** `2` (Number of Provinces)
+
+---
+
+## **5. Complexity Analysis**
+### **Time Complexity**
+- **DFS runs once per province.**
+- Each node is **visited once**.
+- **Looping through the matrix** takes \( O(n) \) for each node.
+
+Total complexity: **\( O(n^2) \)** (since we traverse the `isConnected` matrix).
+
+### **Space Complexity**
+- **Visited array** takes \( O(n) \).
+- **Recursive DFS calls** take at most \( O(n) \) space in the call stack.
+
+Total space complexity: **\( O(n) \)**.
+
+---
+
+## **6. Summary**
+- **Problem Type**: Finding **connected components** in a graph.
+- **Approach**: DFS traversal with a **visited array**.
+- **Key Concept**: Every DFS call **explores one province** completely.
+- **Time Complexity**: **\( O(n^2) \)** (for adjacency matrix).
+- **Space Complexity**: **\( O(n) \)** (visited array and recursion stack).
+- **Edge Cases**:
+  - **Single City** → Only one province.
+  - **All Cities Connected** → One province.
+  - **No Connections** → Each city is its own province.
+
+---
+
+## **Final Thoughts**
+This DFS-based approach efficiently finds the number of provinces by treating it as a **graph traversal problem**. The key idea is **each DFS call represents one province**, and the `visitedArray` ensures that we don’t reprocess nodes. The **time complexity is \( O(n^2) \)** due to the adjacency matrix, but it's optimal for small graphs.
+
+This structured breakdown should help you **revisit and revise** the logic of this solution quickly! 🚀
+
+## Rotting Oranges
+
+### Code
+
+```java
+class Solution {
+
+    //Helper class
+    public class Node{
+        int row;
+        int col;
+        int time;
+        public Node(int row,int col,int time){
+            this.row=row;
+            this.col=col;
+            this.time=time;
+        }
+    }
+    
+    //Manually finding rotten oranges(traversing to each box).
+    public Queue<Node> findRotten(int[][] grid){
+        Queue<Node> q=new LinkedList<>();
+        for(int i=0;i<grid.length;i++){
+            for(int j=0;j<grid[0].length;j++){
+                if(grid[i][j]==2){
+                    Node newNode=new Node(i,j,0);
+                    q.add(newNode);
+                }
+            }
+        }
+        return(q);
+    }
+    
+    public int bfs(int[][] grid,boolean[][] visitedMatrix, Queue<Node> q){
+
+        //This is the variable that is to be returned that tracks number of minutes taken for all the 
+        //oranges to rot in a grid if even one rotten one is present
+        int currentTime=0;
+
+        //Since the rotten orange rots the good oranges in 4 direction, we have stored all possible
+        //direction movement here.
+        int[][] possibleDirections={{0,1},{1,0},{-1,0},{0,-1}};
+        
+        //Now starts the main BFS.
+        while(!q.isEmpty()){
+            Node outNode=q.poll(); //We have just extracted a rotten orange.
+            int r=outNode.row; //We have extracted the row of the rotten orange.
+            int c=outNode.col; //We have extracted the column of the rotten orange.
+
+            //Now using the coordinates of the rotten orange, we will move in all 4 adjacent direction of
+            //this rotten orange while checking the new coordinate is not visited and the new coordinate
+            //contains a 1 or fresh orange. If so, we will make it rotten by changing its value to 2,
+            //increase current time by 1 to mark this freshoranges time or decay and update the currentTime
+            //variable with the time of this new rotten orange to return later if no further updates are 
+            //found. This is continued untill queue finishes out.
+            for(int[] iter:possibleDirections){
+                int row=r+iter[0];
+                int column=c+iter[1];
+                if(row>=0 && row<grid.length && column>=0 && column<grid[0].length && !visitedMatrix[row][column] && grid[row][column]==1){
+                    Node newNode=new Node(row,column,outNode.time+1);
+                    q.add(newNode);
+                    visitedMatrix[row][column] = true;
+                    grid[row][column] = 2;
+                    currentTime=newNode.time;
+                }
+            }
+        }
+        return(currentTime);
+    }
+    
+    
+    
+    public int orangesRotting(int[][] grid) {
+        //Making a boolean matrix of grid matrix's dimension to mark the visited and non-visited nodes.
+        int r=grid.length;
+        int c=grid[0].length;
+        boolean[][] visitedMatrix=new boolean[r][c];
+
+        //Call a function findRotten which return a queue with all the rotten oranges and related info as
+        //described in the Node class.
+        Queue<Node> q=findRotten(grid);
+
+        //Run a BFS via the obtained queue to find adjacent rotten oranges.
+        int timeTaken=bfs(grid,visitedMatrix,q);
+
+        // Check if there are any fresh oranges left
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                if (grid[i][j] == 1) {
+                    return -1;
+                }
+            }
+        }
+
+        //Else return the updated current time.
+        return(timeTaken);
+    }
+}
+```
+
+### Explanation
+
+I'll provide a **detailed breakdown** of the solution for **Rotting Oranges**, covering:  
+
+1. **Intuition Behind the Approach**  
+2. **Concept and Working of the Code**  
+3. **Line-by-Line Explanation**  
+4. **Example Execution with Iteration Table**  
+5. **Complexity Analysis**  
+
+---
+
+# **1. Intuition Behind the Approach**
+The problem requires us to find the **minimum time** for all fresh oranges to rot if they can.  
+
+- A **rotting orange (2)** infects adjacent **fresh oranges (1)** in **4 directions (up, down, left, right)**.  
+- **Rotting spreads like waves in BFS fashion**—all oranges infected at time `t` will infect their adjacent fresh oranges at `t+1`.  
+- If, after processing all rotten oranges, there are still fresh oranges left, return `-1`.  
+
+Since we must **process levels of infection step-by-step**, **Breadth-First Search (BFS)** is the best approach.  
+
+---
+
+# **2. Concept and Working of the Code**
+### **Key Observations**
+1. **Use BFS with a Queue**  
+   - BFS is ideal for finding the **shortest time** required for all fresh oranges to rot.  
+   - We store **initial rotten oranges** in a queue and process them **level by level** (minute by minute).  
+
+2. **Processing in Levels (Time Simulation)**  
+   - A rotten orange at `(i, j)` rots adjacent fresh oranges in the **next time unit**.  
+   - We track time using a `time` variable in the queue.  
+
+3. **Checking for Remaining Fresh Oranges**  
+   - If, after BFS, there are still fresh oranges (`1`), **return `-1`** (impossible to rot all oranges).  
+   - Otherwise, return the **total time taken**.  
+
+---
+
+# **3. Line-by-Line Explanation**
+```java
+class Solution {
+```
+- **Defines the `Solution` class** where our logic resides.  
+
+---
+
+## **Node Class (Helper)**
+```java
+public class Node {
+    int row;
+    int col;
+    int time;
+    public Node(int row, int col, int time) {
+        this.row = row;
+        this.col = col;
+        this.time = time;
+    }
+}
+```
+- **A helper class** to store:  
+  - `row`: Row index of the orange.  
+  - `col`: Column index of the orange.  
+  - `time`: The time at which this orange became rotten.  
+- We will use this to **track infected oranges in BFS**.  
+
+---
+
+## **Finding Initially Rotten Oranges**
+```java
+public Queue<Node> findRotten(int[][] grid) {
+    Queue<Node> q = new LinkedList<>();
+    for (int i = 0; i < grid.length; i++) {
+        for (int j = 0; j < grid[0].length; j++) {
+            if (grid[i][j] == 2) {
+                Node newNode = new Node(i, j, 0);
+                q.add(newNode);
+            }
+        }
+    }
+    return q;
+}
+```
+- **This method scans the grid** to find all **initially rotten oranges** (`2`).  
+- **Each rotten orange is added to a queue** with its `time = 0`.  
+- **Returns a queue** containing all initially rotten oranges.  
+
+---
+
+## **BFS to Rot Fresh Oranges**
+```java
+public int bfs(int[][] grid, boolean[][] visitedMatrix, Queue<Node> q) {
+```
+- **BFS traversal to rot fresh oranges** using a queue.  
+
+```java
+int currentTime = 0;
+```
+- Tracks **maximum time taken** to rot all oranges.  
+
+```java
+int[][] possibleDirections = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
+```
+- Stores **4 possible movement directions** (right, down, left, up).  
+
+```java
+while (!q.isEmpty()) {
+```
+- **Start BFS traversal** until all rotten oranges are processed.  
+
+```java
+Node outNode = q.poll();
+int r = outNode.row;
+int c = outNode.col;
+```
+- **Extract a rotten orange** from the queue and process its adjacent cells.  
+
+```java
+for (int[] iter : possibleDirections) {
+    int row = r + iter[0];
+    int column = c + iter[1];
+```
+- **Move in 4 directions** from the current rotten orange.  
+
+```java
+if (row >= 0 && row < grid.length && column >= 0 && column < grid[0].length &&
+    !visitedMatrix[row][column] && grid[row][column] == 1) {
+```
+- **Check if the new position is valid** (within grid limits).  
+- **Check if the orange is fresh (`1`)** and has **not been visited** before.  
+
+```java
+Node newNode = new Node(row, column, outNode.time + 1);
+q.add(newNode);
+visitedMatrix[row][column] = true;
+grid[row][column] = 2;
+currentTime = newNode.time;
+```
+- **Convert the fresh orange to rotten (`2`)**, mark it as **visited**, and add it to the queue.  
+- **Update `currentTime`** to track the maximum time taken.  
+
+```java
+return currentTime;
+```
+- **Return total time taken** after BFS finishes.  
+
+---
+
+## **Main Function**
+```java
+public int orangesRotting(int[][] grid) {
+```
+- **Entry point** to solve the problem.  
+
+```java
+int r = grid.length;
+int c = grid[0].length;
+boolean[][] visitedMatrix = new boolean[r][c];
+```
+- Creates a **visited matrix** to track processed oranges.  
+
+```java
+Queue<Node> q = findRotten(grid);
+```
+- **Finds all initially rotten oranges** and stores them in a queue.  
+
+```java
+int timeTaken = bfs(grid, visitedMatrix, q);
+```
+- **Runs BFS** to spread rot and find the total time taken.  
+
+```java
+for (int i = 0; i < r; i++) {
+    for (int j = 0; j < c; j++) {
+        if (grid[i][j] == 1) {
+            return -1;
+        }
+    }
+}
+```
+- **Final check**: If any fresh orange (`1`) remains, return **`-1`**.  
+
+```java
+return timeTaken;
+```
+- Otherwise, **return the total time**.  
+
+---
+
+# **4. Example Execution with Iteration Table**
+### **Input**
+```java
+grid = [
+    [2, 1, 1],
+    [1, 1, 0],
+    [0, 1, 1]
+]
+```
+### **Initial State**
+```
+2  1  1
+1  1  0
+0  1  1
+```
+### **BFS Iterations**
+| Minute | Rotten Orange Coordinates | Grid After Infection |
+|--------|---------------------------|----------------------|
+| `0` | `(0,0)` | **(Start BFS)** |
+| `1` | `(0,1)`, `(1,0)` | `2  2  1` <br> `2  1  0` <br> `0  1  1` |
+| `2` | `(0,2)`, `(1,1)`, `(2,1)` | `2  2  2` <br> `2  2  0` <br> `0  2  1` |
+| `3` | `(2,2)` | `2  2  2` <br> `2  2  0` <br> `0  2  2` |
+- **Final Answer:** `4`  
+
+---
+
+# **5. Complexity Analysis**
+### **Time Complexity**: **O(N × M)**  
+- **Finding rotten oranges** takes **O(N × M)**.  
+- **BFS visits each cell once**, so it runs in **O(N × M)**.  
+- **Final check** takes **O(N × M)**.  
+- Overall: **O(N × M)**.  
+
+### **Space Complexity**: **O(N × M)**  
+- **Queue stores at most all cells** → O(N × M).  
+- **Visited matrix** → O(N × M).  
+
+---
+
+# **Summary**
+- **Problem Type**: BFS Traversal (Shortest Path in a Grid).  
+- **Approach**:  
+  - Use BFS to simulate the **spread of rot** in waves.  
+  - Track time taken for **all oranges to rot**.  
+  - Return `-1` if any fresh orange remains.  
+- **Time Complexity**: **O(N × M)**.  
+- **Space Complexity**: **O(N × M)**.
+
+## Flood Fill
+
+### Code
+
+```java
+class Solution {
+    
+    //Helper class.
+    public class pair{
+        public int first;
+        public int second;
+        public pair(int first,int second){
+            this.first=first;
+            this.second=second;
+        }
+    }
+    
+    public void bfs(int initialColor,pair node, int newColor, int[][] image, boolean[][] visitedArray){
+        //Source point marked as visited.
+        visitedArray[node.first][node.second]=true;
+        //Color of souce point changed to newColor
+        image[node.first][node.second] = newColor;
+
+        //All permissible direction to move from the current node.North, south, east, west.
+        int[][] possibleDirections={{0,1},{1,0},{-1,0},{0,-1}};
+
+        //Queue to track the initial color boxes and change them.
+        Queue<pair> q=new LinkedList<>();
+        q.add(node);
+
+        //This is a basic BFS implementation. What is being done here is simple, we pop out a node from the
+        //queue, access its row and column, check for all the element in adjacent direction that have the
+        //same color as this node's previous color and have not been already visited. We access each of such 
+        //node one by one, convert them into pairs storing thier rows and cols, adding them into the queue
+        //marking them visited and changing their original color to new color. This continues untill the 
+        //queue is empty.
+        while(!q.isEmpty()){
+            pair exitedQueue=q.poll();
+            for(int[] it:possibleDirections){
+                int row=exitedQueue.first+it[0];
+                int column=exitedQueue.second+it[1];
+                if(row>=0 && row<image.length && column>=0 && column<image[0].length && !visitedArray[row][column] && image[row][column]==initialColor){
+                    pair newNode=new pair(row,column);
+                    q.add(newNode);
+                    visitedArray[row][column] = true;
+                    image[row][column]=newColor;
+                }
+            }
+        }
+        
+    }
+    
+    public int[][] floodFill(int[][] image, int sr, int sc, int color) {
+        //Finding total number of rows and columns.
+        int r=image.length;
+        int c=image[0].length;
+
+        //Building a boolean matrix of same dimensions as of image, to mark visited non-visited.
+        boolean[][] visitedMatrix=new boolean[r][c];
+
+        //Accessing the color or source and creating a new Pair.
+        int initialColor=image[sr][sc];
+        pair node=new pair(sr,sc);
+
+        int newColor=color;
+
+        //Calling the BFS algo
+        bfs(initialColor,node,newColor,image, visitedMatrix);
+
+        //Returning the newly formed image.
+        return(image);
+    }
+}
+```
+
+### Explanation
+
+I'll provide a **detailed breakdown** of the solution for **Flood Fill**, covering:
+
+1. **Intuition Behind the Approach**  
+2. **Concept and Working of the Code**  
+3. **Line-by-Line Explanation**  
+4. **Example Execution with Iteration Table**  
+5. **Complexity Analysis**  
+
+---
+
+# **1. Intuition Behind the Approach**
+### **Understanding the Problem Statement**
+- You are given a **2D grid (image) of colors**, where each pixel has a specific color.
+- You start at a given pixel `(sr, sc)` and need to **change its color** along with all connected pixels of the **same initial color**.
+- The connected pixels are those **adjacent in four directions** (up, down, left, right).
+- The process stops when there are **no more adjacent pixels** of the **initial color**.
+
+### **Key Observations**
+1. **Graph Traversal Problem**  
+   - The problem is similar to **finding all reachable nodes in a graph**, where each pixel is a **node** and an edge exists if the adjacent pixel has the **same initial color**.
+   - We can use **Breadth-First Search (BFS)** or **Depth-First Search (DFS)**.
+
+2. **Why BFS?**  
+   - BFS explores layer by layer, ensuring **all pixels of the same color** get changed in the shortest number of steps.
+   - BFS uses a **queue** to process pixels level by level.
+
+3. **What Needs to be Done?**  
+   - Start from `(sr, sc)`, and **change its color**.
+   - Traverse in **4 directions** (left, right, up, down) **only if**:
+     - The adjacent pixel has the **same initial color**.
+     - The adjacent pixel **has not been visited yet**.
+   - Repeat the process **until no more adjacent pixels can be changed**.
+
+---
+
+# **2. Concept and Working of the Code**
+### **Step-by-Step Execution**
+1. **Store the Initial Color**  
+   - Before we start, store the **color of the starting pixel**.  
+
+2. **Use a Queue for BFS Traversal**  
+   - The queue helps to explore **each pixel level by level**.  
+   - Start with the given pixel `(sr, sc)` and process its **adjacent** pixels.  
+
+3. **Keep Track of Visited Pixels**  
+   - We use a **boolean matrix (`visitedMatrix`)** to **avoid revisiting** already processed pixels.  
+
+4. **Change Colors Until BFS Queue is Empty**  
+   - While there are pixels left in the queue:
+     - **Extract the front pixel**.
+     - **Move in four possible directions** (up, down, left, right).
+     - **Change its color if conditions are met**.
+     - **Push the newly colored pixel into the queue**.
+   - The process stops when the **queue is empty**.
+
+---
+
+# **3. Line-by-Line Explanation**
+```java
+class Solution {
+```
+- **Defines the `Solution` class** that contains the implementation.
+
+---
+
+## **Helper Class (Pair)**
+```java
+public class pair {
+    public int first;
+    public int second;
+    public pair(int first, int second) {
+        this.first = first;
+        this.second = second;
+    }
+}
+```
+- **Defines a helper class** `pair` to store:
+  - `first`: Row index of a pixel.
+  - `second`: Column index of a pixel.
+- **This is used in the BFS queue** to store pixel coordinates.
+
+---
+
+## **BFS Implementation**
+```java
+public void bfs(int initialColor, pair node, int newColor, int[][] image, boolean[][] visitedArray) {
+```
+- **Implements the BFS function** to perform the flood fill.
+
+```java
+visitedArray[node.first][node.second] = true;
+image[node.first][node.second] = newColor;
+```
+- **Marks the starting pixel as visited** and **changes its color**.
+
+```java
+int[][] possibleDirections = {{0,1}, {1,0}, {-1,0}, {0,-1}};
+```
+- **Defines the 4 possible movement directions**:
+  - `{0,1}` → **Right**
+  - `{1,0}` → **Down**
+  - `{-1,0}` → **Up**
+  - `{0,-1}` → **Left**
+
+```java
+Queue<pair> q = new LinkedList<>();
+q.add(node);
+```
+- **Creates a queue** and **adds the starting pixel** to process.
+
+---
+
+## **BFS Traversal**
+```java
+while (!q.isEmpty()) {
+```
+- **Starts BFS traversal** while there are pixels left in the queue.
+
+```java
+pair exitedQueue = q.poll();
+```
+- **Extracts the front pixel from the queue**.
+
+```java
+for (int[] it : possibleDirections) {
+```
+- **Iterates over the 4 possible movement directions**.
+
+```java
+int row = exitedQueue.first + it[0];
+int column = exitedQueue.second + it[1];
+```
+- **Computes new pixel coordinates**.
+
+```java
+if (row >= 0 && row < image.length && column >= 0 && column < image[0].length 
+    && !visitedArray[row][column] && image[row][column] == initialColor) {
+```
+- **Checks if the new pixel**:
+  - Is **within bounds** of the grid.
+  - Has **not been visited**.
+  - Has the **same initial color**.
+
+```java
+pair newNode = new pair(row, column);
+q.add(newNode);
+visitedArray[row][column] = true;
+image[row][column] = newColor;
+```
+- **Marks it as visited, changes color, and adds to queue**.
+
+---
+
+## **Main Function**
+```java
+public int[][] floodFill(int[][] image, int sr, int sc, int color) {
+```
+- **Entry point of the solution**.
+
+```java
+int r = image.length;
+int c = image[0].length;
+boolean[][] visitedMatrix = new boolean[r][c];
+```
+- **Creates a `visitedMatrix`** of the same size as `image`.
+
+```java
+int initialColor = image[sr][sc];
+pair node = new pair(sr, sc);
+int newColor = color;
+```
+- **Stores the initial color and creates the starting pixel pair**.
+
+```java
+bfs(initialColor, node, newColor, image, visitedMatrix);
+```
+- **Calls the BFS function**.
+
+```java
+return image;
+```
+- **Returns the modified image**.
+
+---
+
+# **4. Example Execution with Iteration Table**
+### **Input**
+```java
+image = [
+    [1,1,1],
+    [1,1,0],
+    [1,0,1]
+]
+sr = 1, sc = 1, newColor = 2
+```
+### **Initial State**
+```
+1  1  1
+1  1  0
+1  0  1
+```
+### **BFS Iterations**
+| Step | Queue | Pixel Processed | Grid After Change |
+|------|--------|----------------|----------------------|
+| `0`  | `(1,1)` | `(1,1) → 2` | `1  1  1`<br> `1  2  0`<br> `1  0  1` |
+| `1`  | `(0,1), (1,0)` | `(0,1) → 2` | `1  2  1`<br> `1  2  0`<br> `1  0  1` |
+| `2`  | `(1,0), (0,0)` | `(1,0) → 2` | `1  2  1`<br> `2  2  0`<br> `1  0  1` |
+| `3`  | `(0,0), (2,0)` | `(0,0) → 2` | `2  2  1`<br> `2  2  0`<br> `1  0  1` |
+| `4`  | `(2,0)` | `(2,0) → 2` | `2  2  1`<br> `2  2  0`<br> `2  0  1` |
+- **Final Output:**  
+```
+2  2  1
+2  2  0
+2  0  1
+```
+
+---
+
+# **5. Complexity Analysis**
+### **Time Complexity**: **O(N × M)**
+- Each cell is **visited once**.
+
+### **Space Complexity**: **O(N × M)**
+- **Queue and visited matrix** take **O(N × M)**.
+
+---
+
+# **Summary**
+- **Algorithm**: BFS Traversal.
+- **Time Complexity**: O(N × M).
+- **Space Complexity**: O(N × M).
+
+## Surrounded Regions
+
+### Code
+
+```java
+class Solution {
+    
+    public class Node{
+        int row;
+        int col;
+        public Node(int r,int c){
+            this.row=r;
+            this.col=c;
+        }
+    }
+    
+    //The first step is simple, we do a normal N^2 traversal of the matrix and check for the presence of 
+    // 'O' on the boundaries of the matrix. If found, we capture thier row and column, create a Node and 
+    //then add them into queue, while marking them visited and changing thier value to 'Z'.
+    public Queue<Node> traversal(char[][] board,boolean[][] visitedMatrix){
+        Queue<Node> q=new LinkedList<>();
+        for(int i=0;i<board.length;i++){
+            for(int j=0;j<board[0].length;j++){
+                if (board[i][j] == 'O' && (i == 0 || i == board.length - 1 || j == 0 || j == board[0].length - 1)){
+                    Node newNode=new Node(i,j);
+                    q.add(newNode);
+                    visitedMatrix[i][j]=true;
+                    board[i][j]='Z';
+                }
+            }
+        }
+        return(q);
+    }
+    
+    //We now do a BFS traversal using the element we got in the queue in previous 'traversal' function. The
+    //goal will be simple, to find all the 'O' connected to the 'O's at the boundary of the matrix.
+    //Execution is simple, pop the node, traverse in all its adjacent direction to find the 'O', take its
+    //row and column data, turn it into node, add it into queue, while marking it visited and chaning its
+    //value to 'Z'. Do this until queue is empty/all 'O's connected to boundary 'O' are identified as 'Z'. 
+    public void bfs(char[][] board,boolean[][] visitedMatrix, Queue<Node> q){
+        int[][] possibleDirections={{0,1},{1,0},{0,-1},{-1,0}};
+        while(!q.isEmpty()){
+            Node outNode=q.poll();
+            int r=outNode.row;
+            int c=outNode.col;
+            for(int[] iter:possibleDirections){
+                int row=r+iter[0];
+                int col=c+iter[1];
+                if(row>=0 && row<board.length && col>=0 && col<board[0].length && !visitedMatrix[row][col] && board[row][col]=='O'){
+                    visitedMatrix[row][col]=true;
+                    Node newNode=new Node(row,col);
+                    q.add(newNode);
+                    board[row][col]='Z';
+                }
+            }
+        }
+    }
+    
+    
+    //Now the question stated, all the 'O' enclosed by 'X', are to be converted to 'X'. The 'O' written as
+    //'Z' cannot come into this category as they have atleast one end touching the boundary of matrix
+    //preventing enclosure by 'X'. Rest of the 'O' however will be converted to 'X'. This function does 
+    //exactly that.
+    public void traversalFinal(char[][] board){
+        for(int i=0;i<board.length;i++){
+            for(int j=0;j<board[0].length;j++){
+                if (board[i][j] == 'Z'){
+                    board[i][j]='O';
+                }
+                else if(board[i][j] == 'O'){
+                    board[i][j]='X';
+                }
+            }
+        }
+    }
+    
+    
+    
+    public void solve(char[][] board) {
+        int r=board.length;
+        int c=board[0].length;
+        boolean[][] visitedMatrix=new boolean[r][c];
+        Queue<Node> q=traversal(board,visitedMatrix);
+        bfs(board,visitedMatrix,q);
+        traversalFinal(board);
+    }
+}
+```
+
+### Explanation
+
+I'll provide a **detailed breakdown** of the solution for **Surrounded Regions**, covering:
+
+1. **Intuition Behind the Approach**  
+2. **Concept and Working of the Code**  
+3. **Line-by-Line Explanation**  
+4. **Example Execution with Iteration Table**  
+5. **Complexity Analysis**  
+
+---
+
+# **1. Intuition Behind the Approach**
+### **Understanding the Problem Statement**
+- You are given a **2D grid (board)** containing `'X'` and `'O'`.
+- Any `'O'` **completely surrounded** by `'X'` should be flipped to `'X'`.
+- Any `'O'` that **touches the boundary** should remain unchanged.
+- The goal is to **find all enclosed regions of `'O'` and convert them to `'X'`**.
+
+### **Key Observations**
+1. **Finding Enclosed Regions**  
+   - Any `'O'` that is **not connected** to the boundary `'O'` is an **enclosed region**.
+   - A BFS (or DFS) can be used to **explore all 'O's** connected to boundary `'O'`.
+
+2. **Marking Non-Enclosed Regions First**  
+   - Instead of checking every `'O'` to see if it’s enclosed, **first identify 'O's connected to the boundary**.
+   - We temporarily mark these `'O'`s (e.g., as `'Z'`).
+
+3. **Final Conversion Step**  
+   - Convert all `'O'`s (which are enclosed) to `'X'`.
+   - Convert all `'Z'`s (which were connected to the boundary) back to `'O'`.
+
+### **Strategy**
+1. **Identify 'O' on Boundaries** → Use BFS to mark connected 'O' as `'Z'`.
+2. **Traverse the Grid Again** → Convert enclosed `'O'` to `'X'` and `'Z'` back to `'O'`.
+
+---
+
+# **2. Concept and Working of the Code**
+### **Step-by-Step Execution**
+1. **Identify Boundary `'O'`**  
+   - Traverse the entire grid to find **'O' on boundaries**.
+   - Store their **coordinates** in a queue and mark them as visited.
+   - Change them temporarily to `'Z'`.
+
+2. **BFS to Mark Connected Regions**  
+   - Perform **BFS from each boundary `'O'`**, marking all **reachable** `'O'`s as `'Z'`.
+
+3. **Final Traversal to Convert Values**  
+   - Convert all **remaining** `'O'` to `'X'` (since they are enclosed).
+   - Convert `'Z'` back to `'O'` (since they were touching the boundary).
+
+---
+
+# **3. Line-by-Line Explanation**
+```java
+class Solution {
+```
+- **Defines the `Solution` class** that contains the solution.
+
+---
+
+## **Helper Class (Node)**
+```java
+public class Node {
+    int row;
+    int col;
+    public Node(int r, int c) {
+        this.row = r;
+        this.col = c;
+    }
+}
+```
+- **Defines a helper class** `Node` to store:
+  - `row`: Row index of a cell.
+  - `col`: Column index of a cell.
+- **Used for BFS traversal**.
+
+---
+
+## **Step 1: Identify Boundary 'O'**
+```java
+public Queue<Node> traversal(char[][] board, boolean[][] visitedMatrix) {
+    Queue<Node> q = new LinkedList<>();
+```
+- **Creates a queue** for BFS traversal.
+- `visitedMatrix` is used to track visited cells.
+
+```java
+for (int i = 0; i < board.length; i++) {
+    for (int j = 0; j < board[0].length; j++) {
+```
+- **Iterates through the entire board**.
+
+```java
+if (board[i][j] == 'O' && (i == 0 || i == board.length - 1 || j == 0 || j == board[0].length - 1)) {
+```
+- **Finds all `'O'` cells on the boundary**.
+
+```java
+Node newNode = new Node(i, j);
+q.add(newNode);
+visitedMatrix[i][j] = true;
+board[i][j] = 'Z';
+```
+- **Marks boundary 'O' as visited and temporarily changes them to 'Z'**.
+- **Adds the node to the queue** for BFS traversal.
+
+---
+
+## **Step 2: BFS to Mark Connected 'O'**
+```java
+public void bfs(char[][] board, boolean[][] visitedMatrix, Queue<Node> q) {
+    int[][] possibleDirections = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+```
+- **Defines four possible movement directions** (right, down, left, up).
+
+```java
+while (!q.isEmpty()) {
+    Node outNode = q.poll();
+    int r = outNode.row;
+    int c = outNode.col;
+```
+- **Processes each node in the queue**.
+
+```java
+for (int[] iter : possibleDirections) {
+    int row = r + iter[0];
+    int col = c + iter[1];
+```
+- **Calculates new row and column**.
+
+```java
+if (row >= 0 && row < board.length && col >= 0 && col < board[0].length && !visitedMatrix[row][col] && board[row][col] == 'O') {
+```
+- **Checks if the new cell is within bounds, unvisited, and is 'O'**.
+
+```java
+visitedMatrix[row][col] = true;
+Node newNode = new Node(row, col);
+q.add(newNode);
+board[row][col] = 'Z';
+```
+- **Marks it as visited, adds to queue, and changes 'O' to 'Z'**.
+
+---
+
+## **Step 3: Convert Enclosed 'O' to 'X'**
+```java
+public void traversalFinal(char[][] board) {
+    for (int i = 0; i < board.length; i++) {
+        for (int j = 0; j < board[0].length; j++) {
+```
+- **Iterates over the entire board**.
+
+```java
+if (board[i][j] == 'Z') {
+    board[i][j] = 'O';
+} else if (board[i][j] == 'O') {
+    board[i][j] = 'X';
+}
+```
+- **Converts all remaining 'O' to 'X'** (enclosed regions).
+- **Converts 'Z' back to 'O'** (boundary-connected regions).
+
+---
+
+## **Main Function**
+```java
+public void solve(char[][] board) {
+    int r = board.length;
+    int c = board[0].length;
+    boolean[][] visitedMatrix = new boolean[r][c];
+    Queue<Node> q = traversal(board, visitedMatrix);
+    bfs(board, visitedMatrix, q);
+    traversalFinal(board);
+}
+```
+- **Calls all three steps in sequence**.
+
+---
+
+# **4. Example Execution with Iteration Table**
+### **Input**
+```java
+board = [
+    ['X', 'X', 'X', 'X'],
+    ['X', 'O', 'O', 'X'],
+    ['X', 'X', 'O', 'X'],
+    ['X', 'O', 'X', 'X']
+]
+```
+### **Initial State**
+```
+X  X  X  X
+X  O  O  X
+X  X  O  X
+X  O  X  X
+```
+
+### **Step 1: Mark Boundary 'O' as 'Z'**
+```
+X  X  X  X
+X  O  O  X
+X  X  O  X
+X  Z  X  X
+```
+
+### **Step 2: BFS Marks Connected 'O'**
+```
+X  X  X  X
+X  O  O  X
+X  X  O  X
+X  Z  X  X
+```
+
+### **Step 3: Convert 'O' to 'X', 'Z' back to 'O'**
+```
+X  X  X  X
+X  X  X  X
+X  X  X  X
+X  O  X  X
+```
+
+---
+
+# **5. Complexity Analysis**
+### **Time Complexity**: **O(N × M)**
+- Each cell is visited **at most twice**.
+
+### **Space Complexity**: **O(N × M)**
+- **Queue and visited matrix** take **O(N × M)**.
+
+---
+
+# **Summary**
+- **Algorithm**: BFS Traversal.
+- **Time Complexity**: O(N × M).
+- **Space Complexity**: O(N × M).
+
+## Number of Enclaves
+
+### Code
+
+```java
+class Solution {
+    
+    public class Node{
+        int row;
+        int col;
+        public Node(int r,int c){
+            this.row=r;
+            this.col=c;
+        }
+    }
+
+    //The first step is simple, we do a normal N^2 traversal of the matrix and check for the presence of 
+    // '1' or land on the boundaries of the matrix. If found, we capture thier row and column, create a Node and 
+    //then add them into queue, while marking them visited and changing thier value to '0' or land from 
+    //which I can walk off.
+    public Queue<Node> traversal(int[][] arr,boolean[][] visitedMatrix){
+        Queue<Node> q=new LinkedList<>();
+        for(int i=0;i<arr.length;i++){
+            for(int j=0;j<arr[0].length;j++){
+                if(arr[i][j]==1 && (i == 0 || i == arr.length - 1 || j == 0 || j == arr[0].length - 1)){
+                    Node newNode=new Node(i,j);
+                    q.add(newNode);
+                    arr[i][j]=0;
+                    visitedMatrix[i][j]=true;
+                }
+            }
+        }
+        return(q);
+    }
+    
+    //We now do a BFS traversal using the element we got in the queue in previous 'traversal' function. The
+    //goal will be simple, to find all the '1' connected to the '1's at the boundary of the matrix.
+    //Execution is simple, pop the node, traverse in all its adjacent direction to find the '1', take its
+    //row and column data, turn it into node, add it into queue, while marking it visited and chaning its
+    //value to '0'. Do this until queue is empty/all '1's connected to boundary '1' are identified as '0'.
+    public void bfs(int[][] grid,boolean[][] visitedMatrix,Queue<Node> q){
+        int[][] possibleDirections={{0,1},{1,0},{-1,0},{0,-1}};
+        while(!q.isEmpty()){
+            Node outNode=q.poll();
+            int r=outNode.row;
+            int c=outNode.col;
+            for(int[] iter:possibleDirections){
+                int row=r+iter[0];
+                int col=c+iter[1];
+                if(row >= 0 && row < grid.length && col >= 0 && col < grid[0].length && grid[row][col] == 1 && !visitedMatrix[row][col]){
+                    Node newNode=new Node(row,col);
+                    q.add(newNode);
+                    grid[row][col]=0;
+                    visitedMatrix[row][col]=true;
+                }
+            }
+        }
+    }
+    
+    //Now the question stated, all the '1's not adjoining the boundary from any end can be considered as land
+    //from which we cannot walk off. In previous traversals, we have already marked the boundary '1's and
+    //the '1's connected to the boundary '1's are 0. Hence the remaining '1's will be the answer and 
+    //that is what we are counting here.
+    public int finalTraverse(int[][] grid){
+        int count=0;
+        for(int i=0;i<grid.length;i++){
+            for(int j=0;j<grid[0].length;j++){
+                if(grid[i][j]==1){
+                    count++;
+                }
+            }
+        }
+        return(count);
+    }
+    
+    public int numEnclaves(int[][] grid) {
+        int r=grid.length;
+        int c=grid[0].length;
+        boolean[][] visitedMatrix=new boolean[r][c];
+        Queue<Node> q=traversal(grid,visitedMatrix);
+        bfs(grid,visitedMatrix,q);
+        int sol=finalTraverse(grid);
+        return(sol);
+    }
+}
+```
+
+### Explanation
+
+**Intuition Behind the Approach:**
+The problem requires us to count the number of land cells ('1's) that are completely enclosed within the grid and cannot reach the boundary. This means that if a '1' is connected to another '1' that eventually leads to the boundary, it is not enclosed and should not be counted.
+
+A natural way to approach this problem is to first identify all '1's that are on the boundary or connected to a boundary '1'. We can eliminate these from consideration and then simply count the remaining '1's.
+
+We can achieve this by:
+1. Performing a traversal of the boundary cells to identify '1's.
+2. Using BFS (or DFS) to mark all reachable '1's from these boundary points as visited.
+3. Counting the remaining '1's in the grid that were not visited.
+
+---
+
+**Concept of How the Code Works:**
+1. **Identify Boundary '1's:** Traverse the grid and find all '1's located on the boundaries. These '1's are converted into '0's and stored in a queue for BFS traversal.
+2. **BFS Traversal:** Using the queue, process each node, visiting its adjacent '1's, converting them into '0's, and marking them as visited.
+3. **Count Remaining '1's:** Any '1' that remains in the grid after BFS must be an enclave, as it is not connected to any boundary. The final step is to count these '1's.
+
+---
+
+**Detailed Explanation of the Code:**
+
+```java
+class Solution {
+    
+    public class Node{
+        int row;
+        int col;
+        public Node(int r,int c){
+            this.row=r;
+            this.col=c;
+        }
+    }
+```
+- Defines a `Node` class to store row and column indices.
+- Helps in BFS traversal by representing grid coordinates.
+
+```java
+    public Queue<Node> traversal(int[][] arr,boolean[][] visitedMatrix){
+        Queue<Node> q=new LinkedList<>();
+```
+- Initializes a queue for BFS traversal.
+
+```java
+        for(int i=0;i<arr.length;i++){
+            for(int j=0;j<arr[0].length;j++){
+                if(arr[i][j]==1 && (i == 0 || i == arr.length - 1 || j == 0 || j == arr[0].length - 1)){
+                    Node newNode=new Node(i,j);
+                    q.add(newNode);
+                    arr[i][j]=0;
+                    visitedMatrix[i][j]=true;
+                }
+            }
+        }
+```
+- Iterates over all elements in the grid.
+- If a '1' is found on a boundary, it:
+  - Converts it to '0' (indicating it's not an enclave).
+  - Marks it as visited.
+  - Adds it to the queue for BFS processing.
+
+```java
+        return(q);
+    }
+```
+- Returns the queue containing all boundary '1's for BFS traversal.
+
+```java
+    public void bfs(int[][] grid,boolean[][] visitedMatrix,Queue<Node> q){
+        int[][] possibleDirections={{0,1},{1,0},{-1,0},{0,-1}};
+```
+- Defines directions for BFS traversal: right, down, up, left.
+
+```java
+        while(!q.isEmpty()){
+            Node outNode=q.poll();
+            int r=outNode.row;
+            int c=outNode.col;
+```
+- Extracts a node from the queue and retrieves its row and column indices.
+
+```java
+            for(int[] iter:possibleDirections){
+                int row=r+iter[0];
+                int col=c+iter[1];
+                if(row >= 0 && row < grid.length && col >= 0 && col < grid[0].length && grid[row][col] == 1 && !visitedMatrix[row][col]){
+                    Node newNode=new Node(row,col);
+                    q.add(newNode);
+                    grid[row][col]=0;
+                    visitedMatrix[row][col]=true;
+                }
+            }
+        }
+```
+- Checks all four directions from the current node.
+- If a connected '1' is found:
+  - Converts it to '0'.
+  - Marks it as visited.
+  - Adds it to the queue.
+- Continues until all reachable '1's from the boundary are processed.
+
+```java
+    public int finalTraverse(int[][] grid){
+        int count=0;
+        for(int i=0;i<grid.length;i++){
+            for(int j=0;j<grid[0].length;j++){
+                if(grid[i][j]==1){
+                    count++;
+                }
+            }
+        }
+        return(count);
+    }
+```
+- Iterates through the grid and counts remaining '1's (enclaves).
+
+```java
+    public int numEnclaves(int[][] grid) {
+        int r=grid.length;
+        int c=grid[0].length;
+        boolean[][] visitedMatrix=new boolean[r][c];
+        Queue<Node> q=traversal(grid,visitedMatrix);
+        bfs(grid,visitedMatrix,q);
+        int sol=finalTraverse(grid);
+        return(sol);
+    }
+}
+```
+- Calls the three main functions in sequence.
+- Returns the count of enclave '1's.
+
+---
+
+**Example Execution:**
+
+| Iteration | Queue | Grid (partial) | Visited | Notes |
+|-----------|-------|---------------|---------|-------|
+| Initial   | [(0,1), (1,0)] | 1 0 1 0 \n 0 1 0 1 | 1 1 0 0 \n 0 0 0 0 | Identify boundary '1's |
+| BFS 1     | [(1,0)] | 0 0 1 0 \n 0 1 0 1 | 1 1 0 0 \n 0 0 0 0 | Mark (0,1) as '0' |
+| BFS 2     | [] | 0 0 1 0 \n 0 1 0 1 | 1 1 0 0 \n 0 0 0 0 | Mark (1,0) as '0' |
+| Counting  | - | - | - | Count remaining '1's |
+
+---
+
+**Complexity Analysis:**
+
+1. **Boundary Traversal:** O(N * M)
+2. **BFS Traversal:** O(N * M)
+3. **Final Counting:** O(N * M)
+
+**Overall Complexity:** **O(N * M)**, where **N** is the number of rows and **M** is the number of columns.
+
+---
+
+This detailed explanation provides a comprehensive breakdown of the logic and execution of the problem.
 
 
-## Topographical Sort DFS
+
+# Topographical Sort DFS
 
 ![alt text](image-23.png)
 
