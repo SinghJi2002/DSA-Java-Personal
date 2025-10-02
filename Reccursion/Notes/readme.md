@@ -136,7 +136,7 @@ In the code above we see a basic implementation of recursion where the print fun
 
 Now why do we need recursion?
 
-One simple answer to that question will be the code we did in the previous section. In that code we printed numbers from 1 to 5, via 5 different functions each calling the other in a defined sequence. What if we needed to do that but not for 5 numbers but for say 1 crore numbers. In that case physically writing 5 crore functions is not possible. For solving that issue we have what we call recursion. 
+One simple answer to that question will be the code we did in the previous section. In that code we printed numbers from 1 to 5, via 5 different functions each calling the other in a defined sequence. What if we needed to do that but not for 5 numbers but for say 1 crore numbers. In that case physically writing 1 crore functions is not possible. For solving that issue we have what we call recursion. 
 
 Below we see the previous code implemented recursively doing the same task, that is printing from 1 to 5.
 
@@ -503,7 +503,7 @@ The question is that we are going to be given a number and we need to find the p
 
 The first step for recursive implementation is to find the recurrence relation. In this question at every step, we first find the modulo by 10 to extract the last digit, and follow this up removing that extracted digit from the number by dividing the number by 10 and follow this cycle until the number is zero. Then recurrence relation on the basis of this can be written as,
 
-$F(N)=N(modulo)10+F(N/10)$
+$F(N)=N(modulo)10*F(N/10)$
 
 The base condition as mentioned above will not be when the number turns 0(no digits can be extracted further). This is because if its zero, then no matter what, the product of all the digits of the number is going to be 0. Hence, the real base condition will be when we have a single digit remaining in the number and that can be checked via,
 ```java
@@ -611,7 +611,7 @@ class demonstration{
 
 ## Counting The Zeros In a Number
 
-The code will be simple. For every recursive call we will extract the last digit of the number. We will check whether this number is zero or not. If yes, we update the zero counter variable or leave it as it is. For the next call, send the number but remove the digit from the number we examined in the current call. The termination condition will be when only on digit is left.
+The code will be simple. For every recursive call we will extract the last digit of the number. We will check whether this number is zero or not. If yes, we update the zero counter variable or leave it as it is. For the next call, send the number but remove the digit from the number we examined in the current call. The termination condition will be when only one digit is left.
 
 On the basis of explanation above, recurrence relation is,
 
@@ -921,7 +921,7 @@ We already know how bubble sort works and we have already implemented it iterati
 
 We know in bubble sort, we are given an array with n elements, and we sort the array in n-1 iterations. In each iteration we simply place the largest number at the end of the array for that particular iteration.
 
-In order to implement it recursively we can take the concept we learned in the previous question, yes the pattern one. In iterative bubble sort we take two loops(nested), in here we will replace this concept using the two pointers, `row` and `col`. The `row` pointer will function as the outer loop(if it was iterative) and will govern which iteration(if approach was iterative) is currently happening and which `col`th greatest element in the array is being placed at its correct position.The `col` pointer will function as the inner loop, which with each recursive call will move onto each element of the array upto `length-col` index. It will run as special comparison at each iteration where it will compare the `col` and `col+1` index element of the array and swap if they don't follow the ascending order. On the recursive call's nature, they will be returning nothing. There will be two types of recursive calls being made. One type will be the normal recursive call where the `row` variable will remain same the `col` variable will be increased. The other type of call will happen when `col` variable has reached to index before `length-col` index limit. In that case, `row` will decremented and `col` will be reset to zero.
+In order to implement it recursively we can take the concept we learned in the previous question, yes the pattern one. In iterative bubble sort we take two loops(nested), in here we will replace this concept using the two pointers, `row` and `col`. The `row` pointer will function as the outer loop(if it was iterative) and will govern which iteration(if approach was iterative) is currently happening and which greatest element in the array is being placed at its correct position.The `col` pointer will function as the inner loop, which with each recursive call will move onto each element of the array upto `length-col` index. It will run as special comparison at each iteration where it will compare the `col` and `col+1` index element of the array and swap if they don't follow the ascending order. On the recursive call's nature, they will be returning nothing. There will be two types of recursive calls being made. One type will be the normal recursive call where the `row` variable will remain same the `col` variable will be increased. The other type of call will happen when `col` variable has reached to index before `length-col` index limit. In that case, `row` will decremented and `col` will be reset to zero.
 
 The base case of the code is going to be when `n-1` loops have already taken place and we can get to know this when `row==0`.
 
